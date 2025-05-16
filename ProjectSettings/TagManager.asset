@@ -10,6 +10,8 @@ TagManager:
   - SniperBullet
   - Bubble
   - Gun
+  - EnemyRipleBullet
+  - EnemySniperBullet
   layers:
   - Default
   - TransparentFX
