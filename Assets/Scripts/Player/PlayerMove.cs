@@ -249,7 +249,10 @@ public class PlayerMove : MonoBehaviour
         Destroy(closeEnemy);
 
         rb.linearVelocity = Vector2.zero;
-           
+
+        Camera.main.GetComponent<CameraController>().CameraShaking(0.15f, 0.15f);
+        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(62);
+
         // Ä¿Áö±â
         float t = 0f;
         while (t < 1f)

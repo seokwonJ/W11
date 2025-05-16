@@ -19,7 +19,6 @@ public class EnemySniper : MonoBehaviour
 
     private Transform player;
     private bool isBubble;
-
     void Start()
     {
         currentAmmo = maxAmmo;
@@ -90,6 +89,7 @@ public class EnemySniper : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (isBubble) return;
         health -= damage;
         Debug.Log($"Enemy took {damage} damage! HP: {health}");
 
@@ -101,6 +101,7 @@ public class EnemySniper : MonoBehaviour
 
     void Die()
     {
+        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(61);
         Debug.Log("Enemy died!");
         bubble.SetActive(true);
         isBubble = true;

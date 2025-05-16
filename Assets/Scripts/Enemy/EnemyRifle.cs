@@ -74,6 +74,7 @@ public class EnemyRifle : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (isBubble) return;
         health -= damage;
         Debug.Log($"Enemy took {damage} damage! HP: {health}");
 
@@ -85,6 +86,7 @@ public class EnemyRifle : MonoBehaviour
 
     void Die()
     {
+        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(61);
         Debug.Log("Enemy died!");
         bubble.SetActive(true);
         isBubble = true;

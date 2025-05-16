@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHP : MonoBehaviour
 {
     public int health = 100;
+    public Text hpText;
 
     public GameObject bubble;
     private bool isBubble;
@@ -17,6 +19,7 @@ public class PlayerHP : MonoBehaviour
     {
         if (_playerMove.isPanging) return;
         health -= damage;
+        hpText.text = health.ToString();
         Debug.Log($"Player took {damage} damage! HP: {health}");
 
         if (health <= 0)

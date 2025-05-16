@@ -136,6 +136,7 @@ public class PlayerAttack : MonoBehaviour
             Quaternion spread = Quaternion.Euler(0, 0, Random.Range(-shotgunSpread, shotgunSpread));
             Instantiate(rifleBulletPrefab, firePoint.position, Quaternion.LookRotation(Vector3.forward, fireDir) * spread);
         }
+        shotgunCrossHair.GetComponent<FollowCrossHair>().ScaleSetting(Vector3.one * 1.2f);
         currentBulletCount -= 1;
         currentBulletCount_Text.text = currentBulletCount.ToString();
         Debug.Log("Shotgun Fire!");
@@ -147,6 +148,7 @@ public class PlayerAttack : MonoBehaviour
         Vector2? targetDir = FindClosestEnemyToCursor();
         Vector2 fireDir = targetDir.HasValue ? targetDir.Value : (Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position).normalized;
 
+        rifleCrossHair.GetComponent<FollowCrossHair>().ScaleSetting(Vector3.one * 1.1f);
         Instantiate(rifleBulletPrefab, firePoint.position, Quaternion.LookRotation(Vector3.forward, fireDir));
         currentBulletCount -= 1;
         currentBulletCount_Text.text = currentBulletCount.ToString();
