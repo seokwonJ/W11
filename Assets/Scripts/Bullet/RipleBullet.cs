@@ -28,13 +28,14 @@ public class RipleBullet : MonoBehaviour
             //    enemy.TakeDamage(damage);
             //}
 
-            Destroy(gameObject); // 총알 파괴
+            //Destroy(gameObject); // 총알 파괴
         }
 
         // 벽 같은 다른 오브젝트와 충돌했을 때도 파괴 (옵션)
-        if (collision.CompareTag("Wall"))
+        if (collision.CompareTag("Wall") || collision.CompareTag("Bubble"))
         {
             Destroy(gameObject);
         }
+
     }
 }

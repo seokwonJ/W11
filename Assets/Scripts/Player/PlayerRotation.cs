@@ -3,14 +3,17 @@ using UnityEngine;
 public class PlayerRotation : MonoBehaviour
 {
     public Transform playerBody; // 회전할 자식 오브젝트 (스프라이트 있는 것)
+    private PlayerMove _playerMove;
 
     private void Start()
     {
-
+        _playerMove = GetComponent<PlayerMove>();
     }
 
     void Update()
     {
+        if (_playerMove.isPanging) return;
+
         // 마우스 위치를 월드 좌표로 변환
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 

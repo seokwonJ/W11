@@ -1,4 +1,7 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 
 // 무기 종류 enum
@@ -13,7 +16,7 @@ public class PlayerAttack : MonoBehaviour
 {
     public WeaponType currentWeapon = WeaponType.Rifle;
 
-    public GameObject ripleBulletPrefab;
+    public GameObject rifleBulletPrefab;
     public GameObject sniperBulletPrefab;
     public Transform firePoint;
 
@@ -25,17 +28,43 @@ public class PlayerAttack : MonoBehaviour
     private float attackTimer = 0f;
     public float killRadius = 3f;
 
-    public GameObject ripleTrigger;
+    public GameObject rifleTrigger;
     public GameObject shotgunTrigger;
     public GameObject sniperTrigger;
 
-    public GameObject ripleHand;
+    public GameObject rifleHand;
     public GameObject shotgunHand;
     public GameObject sniperHand;
+
+    public GameObject rifleCrossHair;
+    public GameObject shotgunCrossHair;
+    public GameObject sniperCrossHair;
+
+    public Text weaponName_Text;
+    public Text currentBulletCount_Text;
+    public Text totalBulletCount_Text;
+
+    private PlayerMove _playerMove;
+    
+    private int totalBulletCount;
+    private int currentBulletCount;
+
+    private void Start()
+    {
+        _playerMove = GetComponent<PlayerMove>();
+        totalBulletCount = 90;
+        currentBulletCount = 30;
+        weaponName_Text.text = "Rifle";
+        weaponName_Text.color = Color.blue;
+        currentBulletCount_Text.text = currentBulletCount.ToString();
+        totalBulletCount_Text.text = totalBulletCount.ToString();
+    }
 
     void Update()
     {
         attackTimer -= Time.deltaTime;
+
+        if (_playerMove.isPanging) return;  // Pang 중일 때는 행동x
 
         if (Input.GetMouseButton(0) && attackTimer <= 0f)
         {
@@ -79,22 +108,34 @@ public class PlayerAttack : MonoBehaviour
     void FireSniper()
     {
         Instantiate(sniperBulletPrefab, firePoint.position, firePoint.rotation);
+        currentBulletCount -= 1;
+        currentBulletCount_Text.text = currentBulletCount.ToString();
         Debug.Log("Sniper Fire!");
     }
 
     void FireShotgun()
     {
+        Vector2? targetDir = FindClosestEnemyToCursor();
+        Vector2 fireDir = targetDir.HasValue ? targetDir.Value : (Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position).normalized;
+
         for (int i = 0; i < shotgunPellets; i++)
         {
             Quaternion spread = Quaternion.Euler(0, 0, Random.Range(-shotgunSpread, shotgunSpread));
-            Instantiate(ripleBulletPrefab, firePoint.position, firePoint.rotation * spread);
+            Instantiate(rifleBulletPrefab, firePoint.position, Quaternion.LookRotation(Vector3.forward, fireDir) * spread);
         }
+        currentBulletCount -= 1;
+        currentBulletCount_Text.text = currentBulletCount.ToString();
         Debug.Log("Shotgun Fire!");
     }
 
     void FireRifle()
     {
-        Instantiate(ripleBulletPrefab, firePoint.position, firePoint.rotation);
+        Vector2? targetDir = FindClosestEnemyToCursor();
+        Vector2 fireDir = targetDir.HasValue ? targetDir.Value : (Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position).normalized;
+
+        Instantiate(rifleBulletPrefab, firePoint.position, Quaternion.LookRotation(Vector3.forward, fireDir));
+        currentBulletCount -= 1;
+        currentBulletCount_Text.text = currentBulletCount.ToString();
         Debug.Log("Rifle Fire!");
     }
 
@@ -106,11 +147,12 @@ public class PlayerAttack : MonoBehaviour
         {
             float distance = Vector2.Distance(transform.position, bubble.transform.position);
 
-            if (distance <= 6)
+            if (distance <= 25)
             {
-                bubble.GetComponent<EnemyDropWeapon>().DeadDropWeapon();
-                Destroy(bubble);
                 Debug.Log($"Bubble {bubble.name} destroyed at distance {distance}");
+                //StartCoroutine(PangStop());
+                StartCoroutine(_playerMove.PangDoing(bubble));
+                break;
             }
         }
     }
@@ -127,41 +169,108 @@ public class PlayerAttack : MonoBehaviour
             if (distance <= 6)
             {
                 if (currentWeapon == WeaponType.Rifle) {
-                    Instantiate(ripleTrigger, transform.position, Quaternion.identity);
-                    ripleHand.SetActive(false);
+                    Instantiate(rifleTrigger, transform.position, Quaternion.identity);
+                    rifleHand.SetActive(false);
+                    rifleCrossHair.SetActive(false);
                 }
 
                 if (currentWeapon == WeaponType.Shotgun) {
                     Instantiate(shotgunTrigger, transform.position, Quaternion.identity);
                     shotgunHand.SetActive(false);
+                    shotgunCrossHair.SetActive(false);
                 }
 
                 if (currentWeapon == WeaponType.Sniper)
                 {
                     Instantiate(sniperTrigger, transform.position, Quaternion.identity);
                     sniperHand.SetActive(false);
+                    sniperCrossHair.SetActive(false);
                 }
 
                 currentWeapon = weapon.GetComponent<GunInformation>().weaponType;
 
                 if (currentWeapon == WeaponType.Rifle)
                 {
-                    ripleHand.SetActive(true);
+                    rifleHand.SetActive(true);
+                    rifleCrossHair.SetActive(true);
+                    weaponName_Text.text = "Rifle";
+                    weaponName_Text.color = Color.blue;
+                    totalBulletCount = 90;
+                    currentBulletCount = 30;
                 }
 
                 if (currentWeapon == WeaponType.Shotgun)
                 {
                     shotgunHand.SetActive(true);
+                    shotgunCrossHair.SetActive(true);
+                    weaponName_Text.text = "Shotgun";
+                    weaponName_Text.color = Color.green;
+                    totalBulletCount = 21;
+                    currentBulletCount = 7;
                 }
 
                 if (currentWeapon == WeaponType.Sniper)
                 {
                     sniperHand.SetActive(true);
+                    sniperCrossHair.SetActive(true);
+                    weaponName_Text.text = "Sniper";
+                    weaponName_Text.color = Color.red;
+                    totalBulletCount = 15;
+                    currentBulletCount = 5;
                 }
+
+                totalBulletCount_Text.text = totalBulletCount.ToString();
+                currentBulletCount_Text.text = currentBulletCount.ToString();
 
                 Destroy(weapon);
                 break;
             }
         }
     }
+
+    Vector2? FindClosestEnemyToCursor()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy"); // 적의 태그 확인해줘야 함
+        Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        GameObject closestEnemy = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemies)
+        {
+            float distance = Vector2.Distance(mouseWorldPos, enemy.transform.position);
+            if (currentWeapon == WeaponType.Rifle)
+            {
+                if (distance <= 12f && distance < closestDistance)
+                {
+                    closestEnemy = enemy;
+                    closestDistance = distance;
+                }
+            }
+            if (currentWeapon == WeaponType.Shotgun)
+            {
+                if (distance <= 25f && distance < closestDistance)
+                {
+                    closestEnemy = enemy;
+                    closestDistance = distance;
+                }
+            }
+        }
+
+        if (closestEnemy != null)
+        {
+            return ((Vector2)closestEnemy.transform.position - (Vector2)firePoint.position).normalized;
+        }
+
+        return null;
+    }
+
+    //public IEnumerator PangStop()
+    //{
+    //    isPanging = true;
+    //    yield return new WaitForSecondsRealtime(0.8f);
+    //    isPanging = false;
+    //}
+
+
 }

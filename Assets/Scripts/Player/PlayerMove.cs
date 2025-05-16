@@ -1,14 +1,18 @@
+using System.Collections;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float dashSpeed = 10f;
+    public float pangRushSpeed = 2f;
     public float dashDuration = 0.5f;
     public float dashInputWindow = 0.3f;  // 0.3초 이후부터 입력받기
     public float dashRecoveryTime = 0.2f; // 대쉬 후 경직 시간
     public AnimationCurve dashDecayCurve;
     public float rushTime = 3f;
+    public float pangRushTime = 5f;
 
     public Transform playerBody;
 
@@ -31,15 +35,22 @@ public class PlayerMove : MonoBehaviour
     private float rushTimer = 0f;
     private float lastRushEndTime = -Mathf.Infinity;
 
+    private bool isPangRush = false;
+    private float pangRushTimer = 0f;
+
+    private PlayerAttack _playerAttack;
+    public bool isPanging;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        _playerAttack = GetComponent<PlayerAttack>();
+
     }
 
     void Update()
     {
-        if (!isRecovering) // 경직 중엔 입력 무시
+        if (!isRecovering && !isPanging) // 경직 중엔 입력 무시
         {
             HandleMovementInput();
             HandleDashInput();
@@ -49,6 +60,13 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
+
+        if (isPanging)
+        {
+            rb.angularVelocity = 0;
+            return;
+        }
+
         if (isRecovering)
         {
             rb.linearVelocity = Vector2.zero; // 경직 중엔 이동 불가
@@ -65,6 +83,10 @@ public class PlayerMove : MonoBehaviour
             if (isRushing)
             {
                 rb.linearVelocity = moveVelocity;
+            }
+            else if (isPangRush)
+            {
+                rb.linearVelocity = moveVelocity * pangRushSpeed;
             }
             else
             {
@@ -167,6 +189,13 @@ public class PlayerMove : MonoBehaviour
 
     }
 
+    public void PangRushInput()
+    {
+        print("PangRushInput");
+        isPangRush = true;
+        pangRushTimer = pangRushTime;
+    }
+
     void LateUpdate()
     {
         if (isRecovering)
@@ -177,5 +206,70 @@ public class PlayerMove : MonoBehaviour
                 isRecovering = false;
             }
         }
+
+        if (isPangRush)
+        {
+            pangRushTimer -= Time.deltaTime;
+            if (pangRushTimer <= 0f)
+            {
+                isPangRush = false;
+            }
+        }
+    }
+
+    public float targetScale = 1.2f;
+    public float duration = 0.8f;
+
+    public IEnumerator PangDoing(GameObject closeEnemy)
+    {
+
+        Vector3 originalScale = Vector3.one;
+        Vector3 enlargedScale = Vector3.one * targetScale;
+
+        isPanging = true;
+
+        Vector3 targetPos = closeEnemy.transform.position;
+        float PangMoveSpeed = 175f;
+        float stopDistance = 6f; // 거의 붙었을 때
+
+        playerBody.up = (targetPos - transform.position).normalized;
+
+        rb.linearVelocity = Vector3.zero;
+
+        // 빠르게 이동
+        while (Vector2.Distance(transform.position, targetPos) > stopDistance)
+        {
+            Vector2 newPos = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * PangMoveSpeed);
+            rb.MovePosition(newPos);
+            yield return null;
+        }
+
+        closeEnemy.GetComponent<EnemyDropWeapon>().DeadDropWeapon();
+        Destroy(closeEnemy);
+
+        rb.linearVelocity = Vector2.zero;
+           
+        // 커지기
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            transform.localScale = Vector3.Lerp(originalScale, enlargedScale, t);
+            yield return null;
+        }
+
+        // 작아지기
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            transform.localScale = Vector3.Lerp(enlargedScale, originalScale, t);
+            yield return null;
+        }
+
+        isPanging = false;
+
+        transform.localScale = originalScale; // 안전하게 리셋
+        PangRushInput();
     }
 }
