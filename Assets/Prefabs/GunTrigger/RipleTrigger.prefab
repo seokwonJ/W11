@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5edb8c00cea3b9447b7b8fb6ec44ae55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  totalBulletCount: 90
+  currentBulletCount: 30
   weaponType: 2
 --- !u!1001 &1646869533668550514
 PrefabInstance:

@@ -49,6 +49,9 @@ public class PlayerAttack : MonoBehaviour
     private int totalBulletCount;
     private int currentBulletCount;
 
+    private float reloadTime;
+    private bool isReloading;
+
     private void Start()
     {
         _playerMove = GetComponent<PlayerMove>();
@@ -68,6 +71,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (Input.GetMouseButton(0) && attackTimer <= 0f)
         {
+            if (isReloading) return;
             switch (currentWeapon)
             {
                 case WeaponType.Sniper:
@@ -103,10 +107,18 @@ public class PlayerAttack : MonoBehaviour
             GetWeapon();
             KillNearbyBubbles();
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (isReloading) return;
+            if (totalBulletCount <= 0) return;
+            StartCoroutine(WeaponReloading());
+        }
     }
 
     void FireSniper()
     {
+        if (currentBulletCount <= 0) return;
         Instantiate(sniperBulletPrefab, firePoint.position, firePoint.rotation);
         currentBulletCount -= 1;
         currentBulletCount_Text.text = currentBulletCount.ToString();
@@ -115,6 +127,7 @@ public class PlayerAttack : MonoBehaviour
 
     void FireShotgun()
     {
+        if (currentBulletCount <= 0) return;
         Vector2? targetDir = FindClosestEnemyToCursor();
         Vector2 fireDir = targetDir.HasValue ? targetDir.Value : (Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position).normalized;
 
@@ -130,6 +143,7 @@ public class PlayerAttack : MonoBehaviour
 
     void FireRifle()
     {
+        if (currentBulletCount <= 0) return;
         Vector2? targetDir = FindClosestEnemyToCursor();
         Vector2 fireDir = targetDir.HasValue ? targetDir.Value : (Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position).normalized;
 
@@ -160,6 +174,7 @@ public class PlayerAttack : MonoBehaviour
 
     void GetWeapon()
     {
+        if (isReloading) return;
         GameObject[] weapons = GameObject.FindGameObjectsWithTag("Gun");
 
         foreach (GameObject weapon in weapons)
@@ -168,26 +183,32 @@ public class PlayerAttack : MonoBehaviour
 
             if (distance <= 6)
             {
+                GameObject dropGun = null;
                 if (currentWeapon == WeaponType.Rifle) {
-                    Instantiate(rifleTrigger, transform.position, Quaternion.identity);
+                    dropGun = Instantiate(rifleTrigger, transform.position, Quaternion.identity);
+
                     rifleHand.SetActive(false);
                     rifleCrossHair.SetActive(false);
                 }
 
                 if (currentWeapon == WeaponType.Shotgun) {
-                    Instantiate(shotgunTrigger, transform.position, Quaternion.identity);
+                    dropGun = Instantiate(shotgunTrigger, transform.position, Quaternion.identity);  
                     shotgunHand.SetActive(false);
                     shotgunCrossHair.SetActive(false);
                 }
 
                 if (currentWeapon == WeaponType.Sniper)
                 {
-                    Instantiate(sniperTrigger, transform.position, Quaternion.identity);
+                    dropGun = Instantiate(sniperTrigger, transform.position, Quaternion.identity); Instantiate(sniperTrigger, transform.position, Quaternion.identity);
                     sniperHand.SetActive(false);
                     sniperCrossHair.SetActive(false);
                 }
 
+                dropGun.GetComponent<GunInformation>().totalBulletCount = totalBulletCount;
+                dropGun.GetComponent<GunInformation>().currentBulletCount = currentBulletCount;
+
                 currentWeapon = weapon.GetComponent<GunInformation>().weaponType;
+
 
                 if (currentWeapon == WeaponType.Rifle)
                 {
@@ -195,8 +216,8 @@ public class PlayerAttack : MonoBehaviour
                     rifleCrossHair.SetActive(true);
                     weaponName_Text.text = "Rifle";
                     weaponName_Text.color = Color.blue;
-                    totalBulletCount = 90;
-                    currentBulletCount = 30;
+                    //totalBulletCount = 90;
+                    //currentBulletCount = 30;
                 }
 
                 if (currentWeapon == WeaponType.Shotgun)
@@ -205,8 +226,8 @@ public class PlayerAttack : MonoBehaviour
                     shotgunCrossHair.SetActive(true);
                     weaponName_Text.text = "Shotgun";
                     weaponName_Text.color = Color.green;
-                    totalBulletCount = 21;
-                    currentBulletCount = 7;
+                    //totalBulletCount = 21;
+                    //currentBulletCount = 7;
                 }
 
                 if (currentWeapon == WeaponType.Sniper)
@@ -215,9 +236,12 @@ public class PlayerAttack : MonoBehaviour
                     sniperCrossHair.SetActive(true);
                     weaponName_Text.text = "Sniper";
                     weaponName_Text.color = Color.red;
-                    totalBulletCount = 15;
-                    currentBulletCount = 5;
+                    //totalBulletCount = 15;
+                    //currentBulletCount = 5;
                 }
+
+                totalBulletCount = weapon.GetComponent<GunInformation>().totalBulletCount;
+                currentBulletCount = weapon.GetComponent<GunInformation>().currentBulletCount;
 
                 totalBulletCount_Text.text = totalBulletCount.ToString();
                 currentBulletCount_Text.text = currentBulletCount.ToString();
@@ -272,5 +296,57 @@ public class PlayerAttack : MonoBehaviour
     //    isPanging = false;
     //}
 
+    IEnumerator WeaponReloading()
+    {
+        isReloading = true;
 
+        yield return new WaitForSeconds(1.5f);
+
+        if (currentWeapon == WeaponType.Rifle)
+        {
+            totalBulletCount = totalBulletCount + currentBulletCount - 30;
+            if (totalBulletCount < 0)
+            {
+                currentBulletCount = 30 + totalBulletCount;
+                totalBulletCount = 0;
+            }
+            else
+            {
+                currentBulletCount = 30;
+            }
+        }
+
+        if (currentWeapon == WeaponType.Shotgun)
+        {
+            totalBulletCount = totalBulletCount + currentBulletCount - 7;
+            if (totalBulletCount < 0)
+            {
+                currentBulletCount = 7 + totalBulletCount;
+                totalBulletCount = 0;
+            }
+            else
+            {
+                currentBulletCount = 7;
+            }
+        }
+
+        if (currentWeapon == WeaponType.Sniper)
+        {
+            totalBulletCount = totalBulletCount + currentBulletCount - 5;
+            if (totalBulletCount < 0)
+            {
+                currentBulletCount = 5 + totalBulletCount;
+                totalBulletCount = 0;
+            }
+            else
+            {
+                currentBulletCount = 5;
+            }
+        }
+
+        totalBulletCount_Text.text = totalBulletCount.ToString();
+        currentBulletCount_Text.text = currentBulletCount.ToString();
+
+        isReloading = false;
+    }
 }

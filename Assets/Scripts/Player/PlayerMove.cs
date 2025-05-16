@@ -235,6 +235,7 @@ public class PlayerMove : MonoBehaviour
         playerBody.up = (targetPos - transform.position).normalized;
 
         rb.linearVelocity = Vector3.zero;
+        dashTimer = 0;
 
         // 빠르게 이동
         while (Vector2.Distance(transform.position, targetPos) > stopDistance)
