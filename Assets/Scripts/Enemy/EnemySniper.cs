@@ -143,6 +143,8 @@ public class EnemySniper : MonoBehaviour
         Debug.Log("Enemy died!");
         bubbleTimer = bubbleTime;
 
+        UIManager.Instance.BubbleEnemy();
+
         StartCoroutine(DieBack());
         GetComponent<SpriteRenderer>().color = Color.magenta;
         isBubble = true;

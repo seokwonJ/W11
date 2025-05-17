@@ -259,6 +259,7 @@ public class PlayerMove : MonoBehaviour
 
         closeEnemy.GetComponent<EnemyDropWeapon>().DeadDropWeapon();
         Destroy(closeEnemy);
+        UIManager.Instance.PangEnemy();
 
         rb.linearVelocity = Vector2.zero;
 
