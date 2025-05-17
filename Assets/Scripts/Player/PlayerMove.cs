@@ -65,10 +65,11 @@ public class PlayerMove : MonoBehaviour
         if (_playerAttack.isZooming)
         {
             rb.linearVelocity = Vector2.zero; // 경직 중엔 이동 불가
+            dashTimer = 0;
             return;
         }
 
-        if (isPanging || _playerAttack.isZooming)
+        if (isPanging)
         {
             rb.angularVelocity = 0;
             return;

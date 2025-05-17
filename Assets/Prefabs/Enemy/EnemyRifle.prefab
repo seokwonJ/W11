@@ -114,6 +114,7 @@ MonoBehaviour:
   fireRate: 0.1
   reloadTime: 2
   maxAmmo: 10
+  bubbleTime: 7
 --- !u!58 &764233469403606817
 CircleCollider2D:
   m_ObjectHideFlags: 0

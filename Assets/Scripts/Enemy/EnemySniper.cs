@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemySniper : MonoBehaviour
@@ -19,16 +20,49 @@ public class EnemySniper : MonoBehaviour
 
     private Transform player;
     private bool isBubble;
+    public float bubbleTime = 7f;
+    private float bubbleTimer = 1;
+
+
+    private Vector3 lastAttackDir;
+    private Vector3 originalScale;
+    private Color originBodyColor;
+
+    private Rigidbody2D _rigidBody;
+
     void Start()
     {
         currentAmmo = maxAmmo;
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        originalScale = transform.localScale;
+        originBodyColor = GetComponent<SpriteRenderer>().color;
+        _rigidBody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
         if (isBubble)
+        {
+            bubbleTimer -= Time.deltaTime;
+
+            if (bubbleTimer < 1.5f)
+            {
+                bubble.GetComponent<SpriteRenderer>().color = new Color(0.529f, 0.808f, 0.922f, 0.6f);
+            }
+
+            if (bubbleTimer < 0)
+            {
+                isBubble = false;
+                bubble.SetActive(false);
+                GetComponent<SpriteRenderer>().color = originBodyColor;
+                health = 100;
+                _rigidBody.angularVelocity = 0;
+                _rigidBody.linearVelocity = Vector2.zero;
+                bubble.GetComponent<SpriteRenderer>().color = new Color(0.08395338f, 0, 1, 0.5176471f);
+                gameObject.tag = "Enemy";
+            }
             return;
+        }
 
         if (isReloading || isAiming)
             return;
@@ -55,11 +89,15 @@ public class EnemySniper : MonoBehaviour
         Debug.Log("Sniper aiming...");
         yield return new WaitForSeconds(1.5f);  // ¡∂¡ÿ Ω√∞£
 
-        Fire();
+        if (!isBubble)
+        {
+            Fire();
 
-        currentAmmo--;
-        fireTimer = fireRate;
+            currentAmmo--;
+            fireTimer = fireRate;
 
+            isAiming = false;
+        }
         isAiming = false;
     }
 
@@ -103,10 +141,42 @@ public class EnemySniper : MonoBehaviour
     {
         Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(1);
         Debug.Log("Enemy died!");
-        bubble.SetActive(true);
+        bubbleTimer = bubbleTime;
+
+        StartCoroutine(DieBack());
+        GetComponent<SpriteRenderer>().color = Color.magenta;
         isBubble = true;
-        gameObject.tag = "Bubble";
         //Destroy(gameObject);
+    }
+    IEnumerator DieBack()
+    {
+        float knockbackForce = 100f;
+        float knockbackDuration = 1f;
+
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            float timer = 0f;
+            while (timer < knockbackDuration)
+            {
+                if (timer < knockbackDuration / 2) transform.localScale = Vector3.Lerp(transform.localScale, originalScale * 1.5f, Time.deltaTime * 10);
+                else
+                {
+                    transform.localScale = Vector3.Lerp(transform.localScale, originalScale, Time.deltaTime * 10);
+                }
+                rb.linearVelocity = lastAttackDir.normalized * knockbackForce;
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            transform.localScale = originalScale;
+
+            // ≥ÀπÈ ≥°≥™∞Ì ∏ÿ√„
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        bubble.SetActive(true);
+        gameObject.tag = "Bubble";
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -114,11 +184,15 @@ public class EnemySniper : MonoBehaviour
 
         if (collision.tag == "RipleBullet")
         {
+            if (!isBubble) { lastAttackDir = (transform.position - collision.transform.position).normalized; }
+
             TakeDamage(10);
             Destroy(collision.gameObject);
         }
         if (collision.tag == "SniperBullet")
         {
+            if (!isBubble) { lastAttackDir = (transform.position - collision.transform.position).normalized; }
+
             TakeDamage(100);
             Destroy(collision.gameObject);
         }
