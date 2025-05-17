@@ -41,6 +41,8 @@ public class PlayerMove : MonoBehaviour
     private PlayerAttack _playerAttack;
     public bool isPanging;
 
+    public GameObject dashEffect;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -52,16 +54,21 @@ public class PlayerMove : MonoBehaviour
     {
         if (!isRecovering && !isPanging) // 경직 중엔 입력 무시
         {
-            HandleMovementInput();
             HandleDashInput();
+            HandleMovementInput();
             HandleRushInput();
         }
     }
 
     void FixedUpdate()
     {
+        if (_playerAttack.isZooming)
+        {
+            rb.linearVelocity = Vector2.zero; // 경직 중엔 이동 불가
+            return;
+        }
 
-        if (isPanging)
+        if (isPanging || _playerAttack.isZooming)
         {
             rb.angularVelocity = 0;
             return;
@@ -133,6 +140,8 @@ public class PlayerMove : MonoBehaviour
                 dashVelocity = moveVelocity;
 
                 canQueueDash = false;
+
+                Instantiate(dashEffect, transform.position, Quaternion.LookRotation(-dashVelocity.normalized, Vector3.up), transform);
             }
 
             if (dashTimer <= 0f)
@@ -158,6 +167,8 @@ public class PlayerMove : MonoBehaviour
 
                 canQueueDash = false;
                 queuedDash = false;
+
+                Instantiate(dashEffect, transform.position, Quaternion.LookRotation(-dashVelocity.normalized, Vector3.up), transform);
             }
         }
     }
@@ -251,7 +262,7 @@ public class PlayerMove : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
 
         Camera.main.GetComponent<CameraController>().CameraShaking(0.15f, 0.15f);
-        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(62);
+        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(2);
 
         // 커지기
         float t = 0f;

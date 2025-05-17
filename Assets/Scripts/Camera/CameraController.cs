@@ -4,7 +4,9 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public GameObject player;
+    public bool isZoomingCamera;
     private Camera cameraNow;
+    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -13,15 +15,25 @@ public class CameraController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        transform.position = new Vector3(player.transform.position.x, player.transform.position.y, -10);
+        
 
-        cameraNow.orthographicSize = Mathf.Lerp(cameraNow.orthographicSize, 60, Time.deltaTime * 20);
+        if (isZoomingCamera)        // 저격할 때
+        {
+            cameraNow.orthographicSize = Mathf.Lerp(cameraNow.orthographicSize, 80, Time.deltaTime * 5);
+            transform.position = Vector3.Lerp(transform.position, new Vector3(player.transform.position.x, player.transform.position.y, -10) + player.transform.GetChild(0).up * 30, Time.deltaTime * 5);
+        }
+        else
+        {
+            cameraNow.orthographicSize = Mathf.Lerp(cameraNow.orthographicSize, 60, Time.deltaTime * 20);
+            transform.position = Vector3.Lerp(transform.position, new Vector3(player.transform.position.x, player.transform.position.y, -10) + player.transform.GetChild(0).up * 10, Time.deltaTime * 10);
+        }
+
     }
 
     public void CameraOrthographicSizeSetting(float size) {
-        cameraNow.orthographicSize = size;
+        cameraNow.orthographicSize = cameraNow.orthographicSize + size;
     }
 
     public void CameraShaking(float duration, float magnitude)

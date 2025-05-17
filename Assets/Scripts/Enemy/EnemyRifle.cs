@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyRifle : MonoBehaviour
@@ -18,6 +19,8 @@ public class EnemyRifle : MonoBehaviour
 
     private Transform player;
     private bool isBubble;
+
+    private Vector3 lastAttackDir;
 
     void Start()
     {
@@ -86,24 +89,52 @@ public class EnemyRifle : MonoBehaviour
 
     void Die()
     {
-        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(61);
+        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(1);
         Debug.Log("Enemy died!");
-        bubble.SetActive(true);
+
+        StartCoroutine(DieBack());
         isBubble = true;
-        gameObject.tag = "Bubble";
         //Destroy(gameObject);
+    }
+
+    IEnumerator DieBack()
+    {
+        float knockbackForce = 300f;
+        float knockbackDuration = 0.2f;
+
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            float timer = 0f;
+            while (timer < knockbackDuration)
+            {
+                print("laskt " +  lastAttackDir);
+                rb.linearVelocity = lastAttackDir.normalized * knockbackForce;
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            // ³Ë¹é ³¡³ª°í ¸ØÃã
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        bubble.SetActive(true);
+        gameObject.tag = "Bubble";
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-
+  
         if (collision.tag == "RipleBullet")
         {
+            if (!isBubble) { lastAttackDir = (transform.position - collision.transform.position).normalized; }
+           
             TakeDamage(10);
             Destroy(collision.gameObject);
         }
         if (collision.tag == "SniperBullet")
         {
+            if (!isBubble) { lastAttackDir = (transform.position - collision.transform.position).normalized; }
             TakeDamage(100);
             Destroy(collision.gameObject);
         }

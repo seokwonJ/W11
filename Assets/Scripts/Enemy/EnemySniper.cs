@@ -101,7 +101,7 @@ public class EnemySniper : MonoBehaviour
 
     void Die()
     {
-        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(61);
+        Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(1);
         Debug.Log("Enemy died!");
         bubble.SetActive(true);
         isBubble = true;

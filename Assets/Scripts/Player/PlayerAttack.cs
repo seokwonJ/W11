@@ -24,6 +24,8 @@ public class PlayerAttack : MonoBehaviour
     public float shotgunSpread = 15f;
     public int shotgunPellets = 5;
     public float rifleFireRate = 0.1f;
+    public float sniperSpread = 15f;
+    public float nowSniperSpread = 15f;
 
     private float attackTimer = 0f;
     public float killRadius = 3f;
@@ -52,6 +54,13 @@ public class PlayerAttack : MonoBehaviour
     private float reloadTime;
     private bool isReloading;
 
+
+    float zoomTime = 0.5f;
+    float zoomTimer = 0f;
+    public bool isZooming = false;
+    private CameraController _cameraController;
+
+
     private void Start()
     {
         _playerMove = GetComponent<PlayerMove>();
@@ -61,6 +70,8 @@ public class PlayerAttack : MonoBehaviour
         weaponName_Text.color = Color.blue;
         currentBulletCount_Text.text = currentBulletCount.ToString();
         totalBulletCount_Text.text = totalBulletCount.ToString();
+        nowSniperSpread = sniperSpread;
+        _cameraController = Camera.main.GetComponent<CameraController>();
     }
 
     void Update()
@@ -88,18 +99,41 @@ public class PlayerAttack : MonoBehaviour
                     break;
             }
         }
+        if (Input.GetMouseButton(1))
+        {
+            if (currentWeapon == WeaponType.Sniper)
+            {
+                if (!isZooming)
+                {
+                    isZooming = true;
+                    _cameraController.isZoomingCamera = true;
+                    zoomTimer = 0f;
+                }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            currentWeapon = WeaponType.Rifle;
+                zoomTimer += Time.deltaTime;
+                float t = Mathf.Clamp01(zoomTimer / zoomTime);
+                nowSniperSpread = Mathf.Lerp(sniperSpread, 1f, t);
+                sniperCrossHair.transform.GetChild(0).GetComponent<Image>().fillAmount = 1 - t + 0.05f;
+
+                // 테스트용 로그
+                Debug.Log(nowSniperSpread);
+            }
+            else
+            {
+                if (!isZooming)
+                {
+                    isZooming = true;
+                }
+            }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+
+        if (Input.GetMouseButtonUp(1))
         {
-            currentWeapon = WeaponType.Shotgun;
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            currentWeapon = WeaponType.Sniper;
+            if (currentWeapon == WeaponType.Sniper) ZoomCancle();
+            else
+            {
+                isZooming = false;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.E))
@@ -116,18 +150,60 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    void ZoomCancle()
+    {
+        isZooming = false;
+        _cameraController.isZoomingCamera = false;
+        nowSniperSpread = sniperSpread;
+        sniperCrossHair.transform.GetChild(0).GetComponent<Image>().fillAmount = 1;
+        zoomTimer = 0;
+
+        // 테스트용 로그
+        Debug.Log(nowSniperSpread);
+    }
+
     void FireSniper()
     {
-        if (currentBulletCount <= 0) return;
-        Instantiate(sniperBulletPrefab, firePoint.position, firePoint.rotation);
+        if (currentBulletCount <= 0)
+        {
+            return;
+        }
+
+        if (currentBulletCount == 3)
+        {
+            sniperCrossHair.transform.GetChild(2).gameObject.SetActive(true);
+        }
+
+        _cameraController.CameraShaking(0.1f, 0.2f);
+
+        Vector2 fireDir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position).normalized;
+
+        Quaternion spread = Quaternion.Euler(0, 0, Random.Range(-nowSniperSpread, nowSniperSpread));
+        Instantiate(sniperBulletPrefab, firePoint.position, Quaternion.LookRotation(Vector3.forward, fireDir) * spread);
+
         currentBulletCount -= 1;
+
+        if (currentBulletCount <= 0)
+        {
+            StartCoroutine(WeaponReloading());
+        }
+
         currentBulletCount_Text.text = currentBulletCount.ToString();
         Debug.Log("Sniper Fire!");
     }
 
     void FireShotgun()
     {
-        if (currentBulletCount <= 0) return;
+        if (currentBulletCount <= 0)
+        {
+            return;
+        }
+
+        if (currentBulletCount == 3)
+        {
+            shotgunCrossHair.transform.GetChild(1).gameObject.SetActive(true);
+        }
+
         Vector2? targetDir = FindClosestEnemyToCursor();
         Vector2 fireDir = targetDir.HasValue ? targetDir.Value : (Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position).normalized;
 
@@ -138,19 +214,41 @@ public class PlayerAttack : MonoBehaviour
         }
         shotgunCrossHair.GetComponent<FollowCrossHair>().ScaleSetting(Vector3.one * 1.2f);
         currentBulletCount -= 1;
+
+        if (currentBulletCount <= 0)
+        {
+            StartCoroutine(WeaponReloading());
+
+        }
         currentBulletCount_Text.text = currentBulletCount.ToString();
         Debug.Log("Shotgun Fire!");
     }
 
     void FireRifle()
     {
-        if (currentBulletCount <= 0) return;
+        
+        if (currentBulletCount <= 0)
+        {
+            return;
+        }
+
+        if (currentBulletCount == 10)
+        {
+            rifleCrossHair.transform.GetChild(1).gameObject.SetActive(true);
+        }
+
         Vector2? targetDir = FindClosestEnemyToCursor();
         Vector2 fireDir = targetDir.HasValue ? targetDir.Value : (Camera.main.ScreenToWorldPoint(Input.mousePosition) - firePoint.position).normalized;
 
         rifleCrossHair.GetComponent<FollowCrossHair>().ScaleSetting(Vector3.one * 1.1f);
         Instantiate(rifleBulletPrefab, firePoint.position, Quaternion.LookRotation(Vector3.forward, fireDir));
         currentBulletCount -= 1;
+
+        if (currentBulletCount <= 0)
+        {
+            StartCoroutine(WeaponReloading());
+        }
+
         currentBulletCount_Text.text = currentBulletCount.ToString();
         Debug.Log("Rifle Fire!");
     }
@@ -176,7 +274,6 @@ public class PlayerAttack : MonoBehaviour
 
     void GetWeapon()
     {
-        if (isReloading) return;
         GameObject[] weapons = GameObject.FindGameObjectsWithTag("Gun");
 
         foreach (GameObject weapon in weapons)
@@ -185,6 +282,9 @@ public class PlayerAttack : MonoBehaviour
 
             if (distance <= 6)
             {
+                StopAllCoroutines();
+                isReloading = false;
+                
                 GameObject dropGun = null;
                 if (currentWeapon == WeaponType.Rifle) {
                     dropGun = Instantiate(rifleTrigger, transform.position, Quaternion.identity);
@@ -201,7 +301,7 @@ public class PlayerAttack : MonoBehaviour
 
                 if (currentWeapon == WeaponType.Sniper)
                 {
-                    dropGun = Instantiate(sniperTrigger, transform.position, Quaternion.identity); Instantiate(sniperTrigger, transform.position, Quaternion.identity);
+                    dropGun = Instantiate(sniperTrigger, transform.position, Quaternion.identity);
                     sniperHand.SetActive(false);
                     sniperCrossHair.SetActive(false);
                 }
@@ -302,10 +402,15 @@ public class PlayerAttack : MonoBehaviour
     {
         isReloading = true;
 
-        yield return new WaitForSeconds(1.5f);
-
         if (currentWeapon == WeaponType.Rifle)
         {
+            rifleCrossHair.transform.GetChild(1).gameObject.SetActive(false);
+            rifleCrossHair.transform.GetChild(2).gameObject.SetActive(true);
+
+            yield return new WaitForSeconds(1.5f);
+
+            rifleCrossHair.transform.GetChild(2).gameObject.SetActive(false);
+
             totalBulletCount = totalBulletCount + currentBulletCount - 30;
             if (totalBulletCount < 0)
             {
@@ -320,6 +425,13 @@ public class PlayerAttack : MonoBehaviour
 
         if (currentWeapon == WeaponType.Shotgun)
         {
+            shotgunCrossHair.transform.GetChild(1).gameObject.SetActive(false);
+            shotgunCrossHair.transform.GetChild(2).gameObject.SetActive(true);
+
+            yield return new WaitForSeconds(1.5f);
+
+            shotgunCrossHair.transform.GetChild(2).gameObject.SetActive(false);
+
             totalBulletCount = totalBulletCount + currentBulletCount - 7;
             if (totalBulletCount < 0)
             {
@@ -334,6 +446,13 @@ public class PlayerAttack : MonoBehaviour
 
         if (currentWeapon == WeaponType.Sniper)
         {
+            sniperCrossHair.transform.GetChild(2).gameObject.SetActive(false);
+            sniperCrossHair.transform.GetChild(3).gameObject.SetActive(true);
+
+            yield return new WaitForSeconds(1.5f);
+
+            sniperCrossHair.transform.GetChild(3).gameObject.SetActive(false);
+
             totalBulletCount = totalBulletCount + currentBulletCount - 5;
             if (totalBulletCount < 0)
             {
