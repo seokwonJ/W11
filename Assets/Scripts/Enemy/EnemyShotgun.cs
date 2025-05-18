@@ -141,7 +141,7 @@ public class EnemyShotgun : MonoBehaviour
     }
     IEnumerator DieBack()
     {
-        float knockbackForce = 100f;
+        float knockbackForce = 50f;
         float knockbackDuration = 1f;
 
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
@@ -186,6 +186,20 @@ public class EnemyShotgun : MonoBehaviour
 
             TakeDamage(100);
             Destroy(collision.gameObject);
+        }
+        if (collision.tag == "Hammer")
+        {
+            if (isBubble)
+            {
+                Vector2 direction = (transform.position - player.transform.position).normalized;
+                _rigidBody.linearVelocity = direction * player.GetComponent<PlayerAttack>().hammerAttackDamage * 2;
+            }
+            else
+            {
+                if (!isBubble) { lastAttackDir = (transform.position - player.transform.position).normalized; }
+
+                TakeDamage(player.GetComponent<PlayerAttack>().hammerAttackDamage);
+            }
         }
     }
 }

@@ -114,7 +114,7 @@ MonoBehaviour:
   fireRate: 0.1
   reloadTime: 2
   maxAmmo: 10
-  bubbleTime: 7
+  bubbleTime: 14
 --- !u!58 &764233469403606817
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -163,11 +163,11 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
+  m_Mass: 10000
+  m_LinearDamping: 1
   m_AngularDamping: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 3a6988ecd0dca0b47a4149bac88679a2, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

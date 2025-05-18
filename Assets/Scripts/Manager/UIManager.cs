@@ -88,7 +88,5 @@ public class UIManager : MonoBehaviour
 
         reactionText.text = "Pang!";
         reactionText.gameObject.GetComponent<Animator>().Play("ResultAnim", -1, 0f);
-
-
     }
 }

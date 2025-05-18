@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 
@@ -37,10 +36,12 @@ public class PlayerAttack : MonoBehaviour
     public GameObject rifleHand;
     public GameObject shotgunHand;
     public GameObject sniperHand;
+    public GameObject hammerHand;
 
     public GameObject rifleCrossHair;
     public GameObject shotgunCrossHair;
     public GameObject sniperCrossHair;
+    public GameObject hammerCrossHair;
 
     public Text weaponName_Text;
     public Text currentBulletCount_Text;
@@ -54,12 +55,16 @@ public class PlayerAttack : MonoBehaviour
     private float reloadTime;
     private bool isReloading;
 
-
     float zoomTime = 0.5f;
     float zoomTimer = 0f;
     public bool isZooming = false;
     private CameraController _cameraController;
 
+    public bool isHammer;
+    public float hammerDamageGauage;
+    public int hammerAttackDamage;
+
+    //private bool isSwingHammer;
 
     private void Start()
     {
@@ -80,9 +85,32 @@ public class PlayerAttack : MonoBehaviour
 
         if (_playerMove.isPanging) return;  // Pang 중일 때는 행동x
 
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+
+        if (scroll != 0)
+        {
+            if (scroll > 0f)
+            {
+                isHammer = false;
+            }
+            else if (scroll < 0f)
+            {
+                isHammer = true;
+            }
+            ChangeWeapons(isHammer);
+        }
+
         if (Input.GetMouseButton(0) && attackTimer <= 0f)
         {
             if (isReloading) return;
+            if (isHammer) {
+                if (hammerDamageGauage <= 100)
+                {
+                    hammerDamageGauage += Time.deltaTime * 50;
+                    hammerCrossHair.transform.GetChild(1).GetComponent<Image>().fillAmount = hammerDamageGauage/100;
+                }
+                return;
+            }
             switch (currentWeapon)
             {
                 case WeaponType.Sniper:
@@ -99,6 +127,14 @@ public class PlayerAttack : MonoBehaviour
                     break;
             }
         }
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (isHammer)
+            {
+                FireHammer();
+            }
+        }
+
         if (Input.GetMouseButton(1))
         {
             if (currentWeapon == WeaponType.Sniper)
@@ -133,6 +169,7 @@ public class PlayerAttack : MonoBehaviour
             else
             {
                 isZooming = false;
+                hammerDamageGauage = 0;
             }
         }
 
@@ -192,6 +229,12 @@ public class PlayerAttack : MonoBehaviour
         Debug.Log("Sniper Fire!");
     }
 
+    void FireHammer()
+    {
+        hammerHand.GetComponent<Animator>().Play("HammerAnim", -1, 0f);
+        StartCoroutine(SwingHammer());
+    }
+
     void FireShotgun()
     {
         if (currentBulletCount <= 0)
@@ -221,7 +264,7 @@ public class PlayerAttack : MonoBehaviour
 
         }
         currentBulletCount_Text.text = currentBulletCount.ToString();
-        Debug.Log("Shotgun Fire!");
+        Debug.Log("Shotgun 3r!");
     }
 
     void FireRifle()
@@ -347,6 +390,7 @@ public class PlayerAttack : MonoBehaviour
 
                 totalBulletCount_Text.text = totalBulletCount.ToString();
                 currentBulletCount_Text.text = currentBulletCount.ToString();
+                OutHammer();
 
                 Destroy(weapon);
                 break;
@@ -391,12 +435,72 @@ public class PlayerAttack : MonoBehaviour
         return null;
     }
 
-    //public IEnumerator PangStop()
-    //{
-    //    isPanging = true;
-    //    yield return new WaitForSecondsRealtime(0.8f);
-    //    isPanging = false;
-    //}
+    public void ChangeWeapons(bool ishammer)
+    {
+        if (!ishammer)
+        {
+            if (currentWeapon == WeaponType.Rifle)
+            {
+                rifleHand.SetActive(true);
+                rifleCrossHair.SetActive(true);
+                weaponName_Text.text = "Rifle";
+                weaponName_Text.color = Color.blue;
+            }
+
+            if (currentWeapon == WeaponType.Shotgun)
+            {
+                shotgunHand.SetActive(true);
+                shotgunCrossHair.SetActive(true);
+                weaponName_Text.text = "Shotgun";
+                weaponName_Text.color = Color.green;
+            }
+
+            if (currentWeapon == WeaponType.Sniper)
+            {
+                sniperHand.SetActive(true);
+                sniperCrossHair.SetActive(true);
+                weaponName_Text.text = "Sniper";
+                weaponName_Text.color = Color.red;
+            }
+            totalBulletCount_Text.text = totalBulletCount.ToString();
+            currentBulletCount_Text.text = currentBulletCount.ToString();
+            OutHammer();
+        }
+        else
+        {
+            if (currentWeapon == WeaponType.Rifle)
+            {
+                rifleHand.SetActive(false);
+                rifleCrossHair.SetActive(false);
+            }
+
+            if (currentWeapon == WeaponType.Shotgun)
+            {
+                shotgunHand.SetActive(false);
+                shotgunCrossHair.SetActive(false);
+            }
+
+            if (currentWeapon == WeaponType.Sniper)
+            {
+                sniperHand.SetActive(false);
+                sniperCrossHair.SetActive(false);
+            }
+
+            hammerCrossHair.SetActive(true);
+            hammerHand.SetActive(true);
+            weaponName_Text.text = "Hammer";
+            weaponName_Text.color = Color.yellow;
+            totalBulletCount_Text.text = 0.ToString();
+            currentBulletCount_Text.text = 0.ToString();
+        }
+    }
+
+    public void OutHammer()
+    {
+        isHammer = false;
+        hammerCrossHair.SetActive(false);
+        hammerHand.SetActive(false);
+    }
 
     IEnumerator WeaponReloading()
     {
@@ -469,5 +573,23 @@ public class PlayerAttack : MonoBehaviour
         currentBulletCount_Text.text = currentBulletCount.ToString();
 
         isReloading = false;
+        if (isHammer)
+        {
+            totalBulletCount_Text.text = 0.ToString();
+            currentBulletCount_Text.text = 0.ToString();
+        }
+        
+    }
+
+    IEnumerator SwingHammer()
+    {
+        print("hammerDamage" + hammerDamageGauage);
+
+        hammerAttackDamage = (int)hammerDamageGauage;
+        hammerHand.tag = "Hammer";
+        yield return new WaitForSeconds(0.3f);
+        hammerHand.tag = "Untagged";
+        hammerDamageGauage = 0;
+        hammerCrossHair.transform.GetChild(1).GetComponent<Image>().fillAmount = hammerDamageGauage;
     }
 }

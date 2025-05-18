@@ -12,6 +12,8 @@ TagManager:
   - Gun
   - EnemyRipleBullet
   - EnemySniperBullet
+  - FxTemporaire
+  - Hammer
   layers:
   - Default
   - TransparentFX
