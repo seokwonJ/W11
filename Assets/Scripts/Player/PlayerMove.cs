@@ -42,12 +42,13 @@ public class PlayerMove : MonoBehaviour
     public bool isPanging;
 
     public GameObject dashEffect;
+    private PlayerHP _playerHP;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         _playerAttack = GetComponent<PlayerAttack>();
-
+        _playerHP = GetComponent<PlayerHP>();
     }
 
     void Update()
@@ -286,6 +287,7 @@ public class PlayerMove : MonoBehaviour
 
         isPanging = false;
 
+        _playerHP.HealHP(50);
         transform.localScale = originalScale; // 안전하게 리셋
         PangRushInput();
     }

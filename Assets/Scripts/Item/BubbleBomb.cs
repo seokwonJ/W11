@@ -22,6 +22,7 @@ public class BubbleBomb : MonoBehaviour
     public void TakeDamage(int damage)
     {
         health -= damage;
+
         if (health <= -100) Explode();
         if (isBubble) return;
 

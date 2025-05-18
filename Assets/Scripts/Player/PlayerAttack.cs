@@ -47,6 +47,7 @@ public class PlayerAttack : MonoBehaviour
     public Text currentBulletCount_Text;
     public Text totalBulletCount_Text;
 
+    private PlayerHP _playerHP;
     private PlayerMove _playerMove;
     
     private int totalBulletCount;
@@ -64,8 +65,6 @@ public class PlayerAttack : MonoBehaviour
     public float hammerDamageGauage;
     public int hammerAttackDamage;
 
-    //private bool isSwingHammer;
-
     private void Start()
     {
         _playerMove = GetComponent<PlayerMove>();
@@ -77,6 +76,7 @@ public class PlayerAttack : MonoBehaviour
         totalBulletCount_Text.text = totalBulletCount.ToString();
         nowSniperSpread = sniperSpread;
         _cameraController = Camera.main.GetComponent<CameraController>();
+
     }
 
     void Update()
@@ -151,8 +151,6 @@ public class PlayerAttack : MonoBehaviour
                 nowSniperSpread = Mathf.Lerp(sniperSpread, 1f, t);
                 sniperCrossHair.transform.GetChild(0).GetComponent<Image>().fillAmount = 1 - t + 0.05f;
 
-                // 테스트용 로그
-                Debug.Log(nowSniperSpread);
             }
             else
             {

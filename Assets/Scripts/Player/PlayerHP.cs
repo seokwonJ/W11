@@ -12,6 +12,7 @@ public class PlayerHP : MonoBehaviour
 
     private void Start()
     {
+        hpText.text = health.ToString();
         _playerMove = GetComponent<PlayerMove>();
     }
 
@@ -26,6 +27,16 @@ public class PlayerHP : MonoBehaviour
         {
             InBubble();
         }
+    }
+
+    public void HealHP(int Heal)
+    {
+        health += Heal;
+        if (health > 200)
+        {
+            health = 200;
+        }
+        hpText.text = health.ToString();
     }
 
     void InBubble()

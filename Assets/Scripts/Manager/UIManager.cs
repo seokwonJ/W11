@@ -4,6 +4,8 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
+    public int totalPang;
+
 
     void Awake()
     {
@@ -80,6 +82,8 @@ public class UIManager : MonoBehaviour
     }
     public void PangEnemy()
     {
+        totalPang += 1;
+
         comboTimer = comboTime;
         reactionText.gameObject.SetActive(true);
         isCombo = true;

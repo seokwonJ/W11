@@ -107,16 +107,23 @@ public class EnemyRifle : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isBubble) return;
+        //if (isBubble) return;
         health -= damage;
         Debug.Log($"Enemy took {damage} damage! HP: {health}");
 
+        if (health <= -100)
+        {
+            Camera.main.GetComponent<CameraController>().CameraShaking(0.15f, 0.15f);
+            UIManager.Instance.PangEnemy();
+            GetComponent<EnemyDropWeapon>().DeadDropWeapon();
+            Destroy(transform.gameObject);
+        }
         if (health <= 0)
         {
+            if (isBubble) return;
             Die();
         }
     }
-
     void Die()
     {
         Camera.main.GetComponent<CameraController>().CameraOrthographicSizeSetting(1);

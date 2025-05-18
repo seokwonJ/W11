@@ -1320,6 +1320,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 1675253333392974649, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.x
       value: -649.3
@@ -1850,6 +1854,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (3)
@@ -2193,6 +2201,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 1675253333392974649, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.x
       value: -615.8
@@ -2263,6 +2275,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (10)
@@ -4320,6 +4336,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (7)
@@ -4939,6 +4959,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 1675253333392974649, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.x
       value: -571.6
@@ -5099,13 +5123,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 1675253333392974649, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -292.8
+      value: -277.42377
       objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -318.5
+      value: -292.87772
       objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5164,6 +5192,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 1675253333392974649, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.x
       value: -295.7
@@ -5229,6 +5261,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (6)
@@ -5520,6 +5556,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (2)
@@ -6745,7 +6785,7 @@ MonoBehaviour:
   pangRushSpeed: 5
   dashDuration: 0.5
   dashInputWindow: 0.2
-  dashRecoveryTime: 0.3
+  dashRecoveryTime: 0
   dashDecayCurve:
     serializedVersion: 2
     m_Curve:
@@ -6915,7 +6955,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fafb2a9c4d3fe1489593c2ec65035b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  health: 200
   hpText: {fileID: 1019875363}
   bubble: {fileID: 1827623622}
 --- !u!1001 &1035638887
@@ -6926,6 +6966,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (4)
@@ -8358,6 +8402,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 1675253333392974649, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.x
       value: -761.6
@@ -8510,6 +8558,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (5)
@@ -8686,6 +8738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75350f2e0ed7ee444acd35534d637346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  totalPang: 0
   comboTime: 4
   reactionText: {fileID: 168685860}
 --- !u!1 &1532059926
@@ -9394,6 +9447,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (9)
@@ -10417,6 +10474,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 3429300542291311477, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4403412146202342509, guid: 0e6bba9b7a83e4b4198d6511bff1cd19, type: 3}
       propertyPath: m_Name
       value: EnemySniper (1)
@@ -11141,6 +11202,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 686856477}
     m_Modifications:
+    - target: {fileID: 1675253333392974649, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
+      propertyPath: maxAmmo
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1728730420687664122, guid: 51cf76a9a5baf4a46b00dc30a918d640, type: 3}
       propertyPath: m_LocalPosition.x
       value: -673
